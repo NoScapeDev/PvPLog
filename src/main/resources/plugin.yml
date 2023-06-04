@@ -1,0 +1,12 @@
+name: PvPLog
+version: '${project.version}'
+main: net.devscape.project.pvplog.PvPLog
+api-version: 1.13
+authors: [DevScape]
+description: All In One PvP Manager!
+
+commands:
+  pvp:
+    description: Main pvp command for toggling/trusting.
+  pvplog:
+    description: Main admin PvPLog commands!

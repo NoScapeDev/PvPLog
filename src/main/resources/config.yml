@@ -1,0 +1,110 @@
+# data settings
+data:
+  host: 'localhost'
+  port: 3306
+  database: 'pvplog_db'
+  username: 'username'
+  password: 'password'
+  options: 'useSSL=false&autoReconnect=true'
+
+# save zone settings
+safe-zones:
+  # worldguard regions safezones
+  wg-regions:
+    - 'safezone1'
+    - 'safezone2'
+  # will force toggle players if they are in this world.
+  forced-worlds:
+    - 'kitpvp'
+
+# pvp function settings
+pvp:
+  # what should be the default setting to pvp toggle.
+  default-setting: false
+  # what game mode should the damager be set in if they are in creative and hit someone.
+  creative-setting: 'SURVIVAL'
+  # will display a blood effect particle when the player is hit.
+  blood-effect: true
+  # will display a red particle above their head, if pvp is on.
+  indicate-pvp-on: true
+
+# combatlog system
+combat:
+  interval: 5 # in seconds.
+  action-bar: true
+  # action when in combat.
+  current-actions:
+    # block all commands.
+    block-all-commands: false
+    # prevent players from using ender pearls
+    block-ender-pearl: true
+    # prevent players from using elytra
+    block-elytra: true
+    # prevent players from using trident
+    block-trident: false
+    # prevent players from using chorus fruit
+    block-chorus-fruit: false
+    # what commands should be enabled during in combat tag.
+    disabled-commands:
+      - 'spawn'
+      - 'home'
+      - 'warp'
+      - 'tpa'
+      - 'fly'
+      - 'pvp'
+      - 'ec'
+      - 'enderchest'
+  # actions on leave if in combat tag?
+  leave-actions:
+    # note: this ban function usin the default bukkit ban list api.
+    # if you want to use a ban plugin, use the 'execute-commands' before.
+    ban: false
+    # just clears the inventory.
+    clear-inv: false
+    # will kill the player and drop loot on leave
+    kill: true
+    execute-commands:
+      enable: false
+      # use these commands to have more customization against the player.
+      commands:
+        - 'ban %player% &cCombat logging!'
+
+# trust system
+trust:
+  enable: true
+  # how many players can a person trust
+  max-trust-allowed: 10
+
+# edit all messages to your liking!
+messages:
+  # plugin messages
+  no-permission: '&cYou don''t have permission to do this.'
+  reloaded: '&e&lSuccess! &7Plugin Reloaded!'
+  # combat messages
+  combat-command-deny: '&c&lError! &7You can''t do this command whilst in combat!'
+  combat-toggle-disabled: '&aYou''re no longer in combat.'
+  combat-toggle-enabled: '&cYou''re now in combat.'
+  combat-action-bar: '&6&lCombat! &7Time Left: &f%time%s'
+  # pvp messages
+  pvp-toggle-enabled: '&4&lPvP Enabled! &7Anyone will be able to hit you now!'
+  pvp-toggle-disabled: '&a&lPvP Disabled! &7Only trusted players will now be able to hit you.'
+  pvp-denied: '&c&lError! &7You can''t damage this player.'
+  pvp-forced-world: '&4&lWarning! &7Forced pvp for this world!'
+  pvp-status: '&a&lStatus! &7Your pvp is &f&l%status%'
+  # error checks
+  player-never-joined: '&c&lError! &7This player has never joined before!'
+  no-players-trusted: '&c&lError! &7No player''s trusted yet!'
+  player-already-trusted: '&c&lError! &7This player is already trusted!'
+  player-not-trusted: '&c&lError! &7This player is not trusted!'
+  player-self: '&c&lError! &7You can''t perform this on yourself!'
+  trust-disabled: '&c&lError! &7Trusting feature disabled!'
+  trust-reached-max-player: '&c&lError! &7You''ve reached the max trust limit!'
+  pvp-already-enabled: '&c&lError! &7Your pvp is already on!'
+  pvp-already-disabled: '&c&lError! &7Your pvp is already off!'
+  combat-block-item: '&c&lError! &7You can''t use this whilst in combat!'
+  combat-block-elytra: '&c&lError! &7You can''t use elytra whilst in combat!'
+  # trust messages
+  trust-list-header: '&6&lTrust List:'
+  trust-list-player: '&8&l> &f%player%'
+  trust-added-player: '&a&lAdded! &f%player% &7has been added to your trust list.'
+  trust-remove-player: '&c&lRemoved! &f%player% &7has been remove from your trust list.'
