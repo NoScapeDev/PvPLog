@@ -57,6 +57,7 @@ public class PvPLogCommand implements CommandExecutor {
                 "&8&m---------&f &6&lPvPLog &8&m---------",
                 "&7/pvplog reload",
                 "",
+                "&7Version: &f" + PvPLog.getPvPlog().getDescription().getVersion(),
                 "&ePlugin Developed by &lDevScape#4278",
                 "&8&m------------------------------");
     }

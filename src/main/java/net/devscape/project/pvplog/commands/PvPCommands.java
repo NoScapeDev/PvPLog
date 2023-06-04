@@ -212,8 +212,9 @@ public class PvPCommands implements CommandExecutor {
                 "&7/pvp status",
                 "&7/pvp trustlist",
                 "&7/pvp trust (player)",
+                "&7/pvp untrust (player)",
                 "",
-                "&eex. /pvp trust DevScape",
-                "&8&m------------------------------");
+                "&eeg. /pvp trust DevScape",
+                "&8&m-----------------------------------");
     }
 }

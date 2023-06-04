@@ -149,7 +149,7 @@ public class CombatListener implements Listener {
 
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent event) {
-        if (event.getEntity() instanceof Player && (event.getDamager() instanceof Player || event.getDamager() instanceof Projectile)) {
+        if (event.getEntity() instanceof Player && (event.getDamager() instanceof Player || event.getDamager() instanceof Projectile || event.getDamager() instanceof ThrownPotion)) {
             Player victim = (Player) event.getEntity();
             Player damager = null;
 
@@ -186,11 +186,23 @@ public class CombatListener implements Listener {
 
             for (String worlds : PvPLog.getPvPlog().getConfig().getStringList("safe-zones.forced-worlds")) {
                 if (victim.getLocation().getWorld().getName().equalsIgnoreCase(worlds)) {
-                    if (!ipVictim.isPvP()) {
-                        ipVictim.setPvP(true);
-                        msgPlayer(victim, PvPLog.getPvPlog().getConfig().getString("messages.pvp-forced-world"));
-                        return;
+                    if (damager.getGameMode() == GameMode.CREATIVE) {
+                        damager.setGameMode(GameMode.valueOf(PvPLog.getPvPlog().getConfig().getString("pvp.creative-setting").toUpperCase()));
                     }
+                    ipVictim.intervalCombat(victim);
+                    ipDamager.intervalCombat(damager);
+
+                    // Spawn blood effect particles
+                    if (PvPLog.getPvPlog().getConfig().getBoolean("pvp.blood-effect")) {
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                Location location = victim.getLocation();
+                                victim.getWorld().spawnParticle(Particle.REDSTONE, location, 30, 0.5, 0.5, 0.5, 0, new Particle.DustOptions(org.bukkit.Color.RED, 1));
+                            }
+                        }.runTaskLater(PvPLog.getPvPlog(), 1); // Delay the blood effect to ensure the player is hit
+                    }
+                    return;
                 }
             }
 
