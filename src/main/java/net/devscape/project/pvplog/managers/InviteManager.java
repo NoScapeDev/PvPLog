@@ -39,7 +39,7 @@ public class InviteManager {
         invitationTasks.put(targetId, taskId);
 
         msgPlayer(sender, PvPLog.getPvPlog().getConfig().getString("messages.trust-invite-trust").replaceAll("%player%", target.getName()));
-        msgPlayer(target, PvPLog.getPvPlog().getConfig().getString("messages.trust-invite-received").replaceAll("%player%", target.getName()));
+        msgPlayer(target, PvPLog.getPvPlog().getConfig().getString("messages.trust-invite-received").replaceAll("%player%", sender.getName()));
     }
 
     public void acceptInvite(Player player) {
