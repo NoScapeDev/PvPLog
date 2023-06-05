@@ -103,8 +103,12 @@ messages:
   pvp-already-disabled: '&c&lError! &7Your pvp is already off!'
   combat-block-item: '&c&lError! &7You can''t use this whilst in combat!'
   combat-block-elytra: '&c&lError! &7You can''t use elytra whilst in combat!'
+  player-not-online: '&c&lError! &7This player is not online!'
   # trust messages
   trust-list-header: '&6&lTrust List:'
   trust-list-player: '&8&l> &f%player%'
   trust-added-player: '&a&lAdded! &f%player% &7has been added to your trust list.'
   trust-remove-player: '&c&lRemoved! &f%player% &7has been remove from your trust list.'
+  # admin messages
+  admin-set-pvp: '&e&lSuccess! &7You have set %player%''s to &f&l%status%'
+  admin-check-status: '&a&lStatus! &f%player%''s &7pvp is &f&l%status%'
