@@ -72,6 +72,7 @@ combat:
 # trust system
 trust:
   enable: true
+  invite-expire: 30 # seconds
   # how many players can a person trust
   max-trust-allowed: 10
 
@@ -112,3 +113,13 @@ messages:
   # admin messages
   admin-set-pvp: '&e&lSuccess! &7You have set %player%''s to &f&l%status%'
   admin-check-status: '&a&lStatus! &f%player%''s &7pvp is &f&l%status%'
+  # invite trust messages
+  trust-invite-trust: '&6&lInvited! &7You''ve invited %player% to trust you.'
+  trust-invite-accept: '&a&lAccepted! &7%player% has accepted your trust invite.'
+  trust-invite-deny: '&c&lDeclined! &7%player% has declined your trust invite.'
+  trust-invite-accept-self: '&a&lAccepted! &7You have accepted their invite!'
+  trust-invite-deny-self: '&c&lDeclined! &7You have denied their invite!'
+  trust-invite-received: '&a&lInvite! &7You''ve been pvp-invited! &a/pvp trustaccept <player> &7or &c/pvp trustdeny <player>'
+  trust-invite-no-pending: '&c&lError! &7You''ve no pending invites!'
+  trust-invite-already-sent: '&c&lError! &7An invitation has already been sent to this player!'
+  trust-invite-expired-self: '&c&lExpired! &7Your invitation from %player% has expired!'

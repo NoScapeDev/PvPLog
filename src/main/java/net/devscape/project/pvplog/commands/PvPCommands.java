@@ -87,24 +87,6 @@ public class PvPCommands implements CommandExecutor {
                             } else {
                                 msgPlayer(player, PvPLog.getPvPlog().getConfig().getString("messages.trust-disabled"));
                             }
-                        } else if (args[0].equalsIgnoreCase("trustlist")) {
-                            if (PvPLog.getPvPlog().getConfig().getBoolean("trust.enable")) {
-                                msgPlayer(player, PvPLog.getPvPlog().getConfig().getString("messages.trust-list-header"));
-
-                                if (ip.getTrusted().size() != 0 && ip.getTrusted() != null) {
-                                    for (UUID uuid : ip.getTrusted()) {
-                                        OfflinePlayer target = Bukkit.getOfflinePlayer(uuid);
-                                        msgPlayer(player, Objects.requireNonNull(PvPLog.getPvPlog().getConfig().getString("messages.trust-list-player"))
-                                                .replaceAll("%player%", Objects.requireNonNull(target.getName())));
-                                    }
-                                } else {
-                                    msgPlayer(player, PvPLog.getPvPlog().getConfig().getString("messages.no-players-trusted"));
-                                }
-
-                                return true;
-                            } else {
-                                msgPlayer(player, PvPLog.getPvPlog().getConfig().getString("messages.trust-disabled"));
-                            }
                         } else if (args[0].equalsIgnoreCase("status")) {
                             if (ip.isPvP()) {
                                 msgPlayer(player, PvPLog.getPvPlog().getConfig().getString("messages.pvp-status").replaceAll("%status%", "ON"));
@@ -115,7 +97,7 @@ public class PvPCommands implements CommandExecutor {
                             return true;
                         }
                     } else if (args.length == 2) {
-                        if (args[0].equalsIgnoreCase("trust")) {
+                        if (args[0].equalsIgnoreCase("trustaccept")) {
                             OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
 
                             if (PvPLog.getPvPlog().getConfig().getBoolean("trust.enable")) {
@@ -129,27 +111,54 @@ public class PvPCommands implements CommandExecutor {
                                     return true;
                                 }
 
-                                if (!ip.isPlayerTrusted(target)) {
-                                    if (target.hasPlayedBefore()) {
-
-                                        if (target.isOnline()) {
-                                            iPlayer ipTarget = PvPLog.getPvPlog().getPlayerManager().getPlayer(target.getPlayer());
-                                            ipTarget.getTrusted().add(player.getUniqueId());
-
-                                            msgPlayer(target.getPlayer(), Objects.requireNonNull(PvPLog.getPvPlog().getConfig().getString("messages.trust-added-player")).replaceAll("%player%", Objects.requireNonNull(player.getName())));
-                                        } else {
-                                            PvPLog.getPvPlog().getUserData().addTrusted(target, player);
-                                        }
-
-                                        ip.getTrusted().add(target.getUniqueId());
-                                        msgPlayer(player, Objects.requireNonNull(PvPLog.getPvPlog().getConfig().getString("messages.trust-added-player")).replaceAll("%player%", Objects.requireNonNull(target.getName())));
-                                    } else {
-                                        msgPlayer(player, PvPLog.getPvPlog().getConfig().getString("messages.player-never-joined"));
-                                    }
+                                if (target.getPlayer() != null) {
+                                    PvPLog.getPvPlog().getInviteManager().acceptInvite(player);
                                 } else {
-                                    msgPlayer(player, PvPLog.getPvPlog().getConfig().getString("messages.player-already-trusted"));
+                                    msgPlayer(player, PvPLog.getPvPlog().getConfig().getString("messages.player-not-online"));
+                                }
+                            } else {
+                                msgPlayer(player, PvPLog.getPvPlog().getConfig().getString("messages.trust-disabled"));
+                            }
+
+                            return true;
+                        } else if (args[0].equalsIgnoreCase("trustdeny")) {
+                            OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+
+                            if (PvPLog.getPvPlog().getConfig().getBoolean("trust.enable")) {
+                                if (player.getName().equalsIgnoreCase(target.getName())) {
+                                    msgPlayer(player, PvPLog.getPvPlog().getConfig().getString("messages.player-self"));
+                                    return true;
                                 }
 
+                                if (target.getPlayer() != null) {
+                                    PvPLog.getPvPlog().getInviteManager().declineInvite(player);
+                                } else {
+                                    msgPlayer(player, PvPLog.getPvPlog().getConfig().getString("messages.player-not-online"));
+                                }
+
+                            } else {
+                                msgPlayer(player, PvPLog.getPvPlog().getConfig().getString("messages.trust-disabled"));
+                            }
+                            return true;
+                        } else if (args[0].equalsIgnoreCase("trust")) {
+                            OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+
+                            if (PvPLog.getPvPlog().getConfig().getBoolean("trust.enable")) {
+                                if (player.getName().equalsIgnoreCase(target.getName())) {
+                                    msgPlayer(player, PvPLog.getPvPlog().getConfig().getString("messages.player-self"));
+                                    return true;
+                                }
+
+                                if (ip.getTrusted().size() >= PvPLog.getPvPlog().getConfig().getInt("trust.max-trust-allowed")) {
+                                    msgPlayer(player, PvPLog.getPvPlog().getConfig().getString("messages.trust-reached-max-player"));
+                                    return true;
+                                }
+
+                                if (target.getPlayer() != null) {
+                                    PvPLog.getPvPlog().getInviteManager().sendInvite(player, target.getPlayer());
+                                } else {
+                                    msgPlayer(player, PvPLog.getPvPlog().getConfig().getString("messages.player-not-online"));
+                                }
                             } else {
                                 msgPlayer(player, PvPLog.getPvPlog().getConfig().getString("messages.trust-disabled"));
                             }
@@ -205,7 +214,6 @@ public class PvPCommands implements CommandExecutor {
         // send help message.
 
         msgPlayer(player,
-                "",
                 "&8&m---------&f &6&lPvP Commands &8&m---------",
                 "&7/pvp on",
                 "&7/pvp off",
@@ -213,6 +221,8 @@ public class PvPCommands implements CommandExecutor {
                 "&7/pvp trustlist",
                 "&7/pvp trust (player)",
                 "&7/pvp untrust (player)",
+                "&7/pvp trustaccept (player)",
+                "&7/pvp trustdeny (player)",
                 "",
                 "&eeg. /pvp trust DevScape",
                 "&8&m-----------------------------------");

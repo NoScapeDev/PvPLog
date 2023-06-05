@@ -5,6 +5,7 @@ import net.devscape.project.pvplog.commands.PvPLogCommand;
 import net.devscape.project.pvplog.listener.CombatListener;
 import net.devscape.project.pvplog.listener.PlayerJoinLeave;
 import net.devscape.project.pvplog.listener.WorldListener;
+import net.devscape.project.pvplog.managers.InviteManager;
 import net.devscape.project.pvplog.managers.PlayerManager;
 import net.devscape.project.pvplog.storage.Database;
 import net.devscape.project.pvplog.storage.UserData;
@@ -14,6 +15,7 @@ public final class PvPLog extends JavaPlugin {
 
     private static PvPLog pvplog;
     private PlayerManager playerManager;
+    private InviteManager inviteManager;
     private static Database database;
     private UserData userData;
 
@@ -31,6 +33,7 @@ public final class PvPLog extends JavaPlugin {
         saveDefaultConfig();
 
         playerManager = new PlayerManager();
+        inviteManager = new InviteManager();
 
         database = new Database();
         userData = new UserData();
@@ -67,5 +70,9 @@ public final class PvPLog extends JavaPlugin {
 
     public UserData getUserData() {
         return userData;
+    }
+
+    public InviteManager getInviteManager() {
+        return inviteManager;
     }
 }
