@@ -17,6 +17,10 @@ safe-zones:
   wg-regions:
     - 'safezone1'
     - 'safezone2'
+  # forced pvp worldguard regions
+  pvp-regions:
+    - 'pvp'
+    - 'warzone'
   # will force toggle players if they are in this world.
   forced-worlds:
     - 'kitpvp'

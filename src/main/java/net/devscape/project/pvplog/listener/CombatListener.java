@@ -268,7 +268,33 @@ public class CombatListener implements Listener {
                 return;
             }
 
+            iPlayer ipVictim = PvPLog.getPvPlog().getPlayerManager().getPlayer(victim);
+            iPlayer ipDamager = PvPLog.getPvPlog().getPlayerManager().getPlayer(damager);
+
             if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null && Bukkit.getServer().getPluginManager().getPlugin("WorldEdit") != null) {
+                for (String regions : PvPLog.getPvPlog().getConfig().getStringList("safe-zones.pvp-regions")) {
+                    if (isInRegion(victim, regions) && isInRegion(damager, regions)) {
+                        if (damager.getGameMode() == GameMode.CREATIVE) {
+                            damager.setGameMode(GameMode.valueOf(PvPLog.getPvPlog().getConfig().getString("pvp.creative-setting").toUpperCase()));
+                        }
+                        ipVictim.intervalCombat(victim);
+                        ipDamager.intervalCombat(damager);
+
+                        // Spawn blood effect particles
+                        if (PvPLog.getPvPlog().getConfig().getBoolean("pvp.blood-effect")) {
+                            new BukkitRunnable() {
+                                @Override
+                                public void run() {
+                                    Location location = victim.getLocation();
+                                    victim.getWorld().spawnParticle(Particle.REDSTONE, location, 30, 0.5, 0.5, 0.5, 0, new Particle.DustOptions(org.bukkit.Color.RED, 1));
+                                }
+                            }.runTaskLater(PvPLog.getPvPlog(), 1); // Delay the blood effect to ensure the player is hit
+                        }
+
+                        return;
+                    }
+                }
+
                 for (String regions : PvPLog.getPvPlog().getConfig().getStringList("safe-zones.wg-regions")) {
                     if (isInRegion(victim, regions)) {
                         event.setCancelled(true);
@@ -277,9 +303,6 @@ public class CombatListener implements Listener {
                     }
                 }
             }
-
-            iPlayer ipVictim = PvPLog.getPvPlog().getPlayerManager().getPlayer(victim);
-            iPlayer ipDamager = PvPLog.getPvPlog().getPlayerManager().getPlayer(damager);
 
             for (String worlds : PvPLog.getPvPlog().getConfig().getStringList("safe-zones.forced-worlds")) {
                 if (victim.getLocation().getWorld().getName().equalsIgnoreCase(worlds)) {
