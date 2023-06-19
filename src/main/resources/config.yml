@@ -9,6 +9,10 @@ data:
 
 # save zone settings
 safe-zones:
+  # should pvplog push the player back if they try to enter the safe wg-regions specified below, if they're in combat.
+  safezone-region-push-back:
+    enable: true
+    force: 3.0
   # worldguard regions safezones
   wg-regions:
     - 'safezone1'
@@ -16,6 +20,22 @@ safe-zones:
   # will force toggle players if they are in this world.
   forced-worlds:
     - 'kitpvp'
+
+# vault should be installed for economy section to work
+# changing the main 'enable' will require a restart to take effect.
+#
+# use - in the value to take away from their balance.
+economy:
+  enable: true
+  # killer economy settings
+  kill:
+    enable: true
+    # how much the player will receive when they kill.
+    value: 3
+  death:
+    enable: true
+    # how much will be taken away if player dies
+    value: -5
 
 # pvp function settings
 pvp:
@@ -32,7 +52,6 @@ pvp:
 combat:
   interval: 5 # in seconds.
   action-bar: true
-  # action when in combat.
   current-actions:
     # block all commands.
     block-all-commands: false
@@ -123,3 +142,8 @@ messages:
   trust-invite-no-pending: '&c&lError! &7You''ve no pending invites!'
   trust-invite-already-sent: '&c&lError! &7An invitation has already been sent to this player!'
   trust-invite-expired-self: '&c&lExpired! &7Your invitation from %player% has expired!'
+  # economy messages
+  kill-economy-add: '&a&lKill! &7Added &f$%value% &7to your balance.'
+  kill-economy-taken: '&a&lKill! &7Added &f$%value% &7from your balance.'
+  death-economy-add: '&4&lDeath! &7Added &f$%value% &7to your balance.'
+  death-economy-taken: '&4&lDeath! &7Removed &f$%value% &7from your balance.'

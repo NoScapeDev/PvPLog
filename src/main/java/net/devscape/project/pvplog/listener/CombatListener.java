@@ -1,5 +1,6 @@
 package net.devscape.project.pvplog.listener;
 
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import net.devscape.project.pvplog.PvPLog;
 import net.devscape.project.pvplog.handlers.ParticleTask;
 import net.devscape.project.pvplog.handlers.iPlayer;
@@ -10,17 +11,19 @@ import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerToggleFlightEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import static net.devscape.project.pvplog.utils.RegionUtils.isInRegion;
+import static net.devscape.project.pvplog.utils.Utils.format;
 import static net.devscape.project.pvplog.utils.Utils.msgPlayer;
+import static net.devscape.project.pvplog.utils.VaultUtils.add;
+import static net.devscape.project.pvplog.utils.VaultUtils.take;
 
 public class CombatListener implements Listener {
 
@@ -137,6 +140,29 @@ public class CombatListener implements Listener {
     }
 
     @EventHandler
+    public void onRegionPushback(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+
+        iPlayer ip = PvPLog.getPvPlog().getPlayerManager().getPlayer(player);
+
+        // Check if the player is in combat mode
+        if (ip.isCombat()) {
+            if (Bukkit.getServer().getPluginManager().getPlugin("WorldGuard") != null && Bukkit.getServer().getPluginManager().getPlugin("WorldEdit") != null) {
+                if (PvPLog.getPvPlog().getConfig().getBoolean("safe-zones.safezone-region-push-back.enable")) {
+                    for (String regions : PvPLog.getPvPlog().getConfig().getStringList("safe-zones.wg-regions")) {
+                        if (isInRegion(player, regions)) {
+                            double pushDistance = PvPLog.getPvPlog().getConfig().getDouble("safe-zones.safezone-region-push-back.force");
+                            Vector direction = player.getLocation().getDirection().multiply(-1).normalize().multiply(pushDistance);
+                            player.setVelocity(direction);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
     public void onCommand(PlayerDeathEvent e) {
         Player player = e.getEntity();
 
@@ -144,6 +170,55 @@ public class CombatListener implements Listener {
 
         if (ip.isCombat()) {
             ip.setCombat(false);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDeath(EntityDeathEvent e) {
+        if (e.getEntity() instanceof Player) {
+            Player victim = (Player) e.getEntity();
+            Player killer = victim.getKiller();
+
+            if (PvPLog.getPvPlog().getConfig().getBoolean("economy.enable") && Bukkit.getServer().getPluginManager().getPlugin("Vault") == null) {
+                String killer_value = PvPLog.getPvPlog().getConfig().getString("economy.kill.value");
+                String death_value = PvPLog.getPvPlog().getConfig().getString("economy.death.value");
+
+                assert killer_value != null;
+                if (killer_value.startsWith("-")) {
+                    String message = PvPLog.getPvPlog().getConfig().getString("messages.kill-economy-taken");
+
+                    int value = Integer.parseInt(killer_value.replace("-", ""));
+                    message = message.replaceAll("%value%", String.valueOf(value));
+                    take(killer, value);
+                    killer.sendMessage(format(message));
+                } else {
+                    String message = PvPLog.getPvPlog().getConfig().getString("messages.kill-economy-add");
+
+                    int value = Integer.parseInt(killer_value);
+                    message = message.replaceAll("%value%", String.valueOf(value));
+                    add(killer, value);
+                    killer.sendMessage(format(message));
+                }
+
+                assert death_value != null;
+                if (death_value.startsWith("-")) {
+                    String message = PvPLog.getPvPlog().getConfig().getString("messages.death-economy-taken");
+
+                    int value = Integer.parseInt(death_value.replace("-", ""));
+                    message = message.replaceAll("%value%", String.valueOf(value));
+                    take(victim, value);
+                    victim.sendMessage(format(message));
+                } else {
+                    String message = PvPLog.getPvPlog().getConfig().getString("messages.death-economy-add");
+
+                    int value = Integer.parseInt(death_value);
+                    message = message.replaceAll("%value%", String.valueOf(value));
+                    add(victim, value);
+
+                    victim.sendMessage(format(message));
+                }
+
+            }
         }
     }
 
