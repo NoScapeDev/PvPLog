@@ -19,6 +19,10 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import static net.devscape.project.pvplog.utils.RegionUtils.isInRegion;
 import static net.devscape.project.pvplog.utils.Utils.format;
 import static net.devscape.project.pvplog.utils.Utils.msgPlayer;
@@ -26,6 +30,8 @@ import static net.devscape.project.pvplog.utils.VaultUtils.add;
 import static net.devscape.project.pvplog.utils.VaultUtils.take;
 
 public class CombatListener implements Listener {
+
+    private final Map<Player, Vector> playerPreviousLocations = new HashMap<>();
 
     @EventHandler
     public void onLeave(PlayerQuitEvent e) {
@@ -151,13 +157,29 @@ public class CombatListener implements Listener {
                 if (PvPLog.getPvPlog().getConfig().getBoolean("safe-zones.safezone-region-push-back.enable")) {
                     for (String regions : PvPLog.getPvPlog().getConfig().getStringList("safe-zones.wg-regions")) {
                         if (isInRegion(player, regions)) {
-                            double pushDistance = PvPLog.getPvPlog().getConfig().getDouble("safe-zones.safezone-region-push-back.force");
-                            Vector direction = player.getLocation().getDirection().multiply(-1).normalize().multiply(pushDistance);
-                            player.setVelocity(direction);
+                            Vector previousLocation = playerPreviousLocations.get(player);
+                            if (previousLocation != null && !previousLocation.equals(player.getLocation().toVector())) {
+                                // Player entered the region and has moved
+                                Vector pushDirection = player.getLocation().getDirection().normalize().multiply(-1);
+                                if (pushDirection.length() > 0 && Double.isFinite(pushDirection.getX()) && Double.isFinite(pushDirection.getY()) && Double.isFinite(pushDirection.getZ())) {
+                                    double pushDistance = PvPLog.getPvPlog().getConfig().getDouble("safe-zones.safezone-region-push-back.force");
+
+                                    pushDirection.setY(0);
+
+                                    pushDirection.multiply(pushDistance);
+                                    player.setVelocity(pushDirection);
+                                }
+                            }
                             return;
                         }
                     }
+
+                    playerPreviousLocations.put(player, player.getLocation().toVector());
                 }
+            }
+        } else {
+            if (playerPreviousLocations.containsKey(player)) {
+                playerPreviousLocations.remove(player);
             }
         }
     }
