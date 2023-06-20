@@ -1,6 +1,9 @@
 package net.devscape.project.pvplog.listener;
 
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.api.npc.NPCRegistry;
 import net.devscape.project.pvplog.PvPLog;
 import net.devscape.project.pvplog.handlers.ParticleTask;
 import net.devscape.project.pvplog.handlers.iPlayer;
@@ -247,8 +250,18 @@ public class CombatListener implements Listener {
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof Player && (event.getDamager() instanceof Player || event.getDamager() instanceof Projectile || event.getDamager() instanceof ThrownPotion)) {
+
+            if (Bukkit.getServer().getPluginManager().getPlugin("Citizens") != null) {
+                NPCRegistry npc = CitizensAPI.getNPCRegistry();
+
+                if (npc.isNPC(event.getEntity())) {
+                    return;
+                }
+            }
+
             Player victim = (Player) event.getEntity();
             Player damager = null;
+
 
             if (event.getDamager() instanceof Player) {
                 damager = (Player) event.getDamager();
